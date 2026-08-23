@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { ensureTables } from '@/lib/db';
 import { getRange } from '@/lib/dateRange';
-import { SHIFT_HOURS, EFFECTIVE_HOURS } from '@/lib/config';
+import { SHIFT_HOURS, EFFECTIVE_HOURS, APP_TIMEZONE, dateInAppTimeZone } from '@/lib/config';
 import {
   pairEntries,
   formatDuration,
@@ -18,7 +18,7 @@ export async function GET(req) {
     const scope = ['day', 'week', 'month'].includes(searchParams.get('scope'))
       ? searchParams.get('scope')
       : 'day';
-    const date = searchParams.get('date') || new Date().toISOString().slice(0, 10);
+    const date = searchParams.get('date') || dateInAppTimeZone();
     const { from, to } = getRange(scope, date);
 
     const checkins = await sql`
@@ -28,11 +28,11 @@ export async function GET(req) {
     `;
     const entries = await sql`
       SELECT * FROM task_entries
-      WHERE ts::date BETWEEN ${from}::date AND ${to}::date
+      WHERE (ts AT TIME ZONE ${APP_TIMEZONE})::date BETWEEN ${from}::date AND ${to}::date
       ORDER BY ts ASC;
     `;
 
-    const { pairs, openStarts } = pairEntries(entries);
+    const { pairs, openStarts, postponed } = pairEntries(entries);
 
     const taskTotals = {};
     pairs.forEach((p) => {
@@ -94,6 +94,11 @@ export async function GET(req) {
       );
     }
 
+    if (postponed.length) {
+      lines.push('');
+      lines.push(`Postponed: ${postponed.map((o) => o.task).join(', ')}`);
+    }
+
     const text = lines.join('\n');
 
     return NextResponse.json({
@@ -105,6 +110,7 @@ export async function GET(req) {
       checkins: checkinSummaries,
       taskTotals,
       openStarts: openStarts.map((o) => o.task),
+      postponed: postponed.map((o) => o.task),
       text,
     });
   } catch (err) {

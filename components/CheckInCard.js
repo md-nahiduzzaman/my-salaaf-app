@@ -11,6 +11,7 @@ function todayStr() {
 
 function fmtTime(iso) {
   return new Date(iso).toLocaleTimeString('en-US', {
+    timeZone: 'Asia/Dhaka',
     hour: 'numeric',
     minute: '2-digit',
   });
@@ -49,7 +50,7 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
       const res = await fetch('/api/checkin', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(iso ? { time: iso } : {}),
+        body: JSON.stringify(iso ? { time: iso, day: todayStr() } : { day: todayStr() }),
       });
       if (!res.ok) throw new Error();
       setEditing(false);
