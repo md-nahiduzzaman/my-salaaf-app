@@ -1,0 +1,471 @@
+@import url('https://fonts.googleapis.com/css2?family=Archivo+Black&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'IBM Plex Sans', sans-serif;
+  --font-mono: 'IBM Plex Mono', monospace;
+  --paper: #eae6dc;
+  --paper-alt: #e1dccf;
+  --ink: #211e19;
+  --ink-soft: #635c4f;
+  --stamp-red: #c8431f;
+  --stamp-green: #2f6b4c;
+  --rule: rgba(33, 30, 25, 0.22);
+  --rule-soft: rgba(33, 30, 25, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+html,
+body {
+  padding: 0;
+  margin: 0;
+}
+
+body {
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  padding: clamp(16px, 4vw, 40px);
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+.sheet {
+  position: relative;
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--paper-alt);
+  border: 1px solid var(--rule);
+  padding: clamp(20px, 5vw, 44px);
+}
+
+.crop {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+}
+.crop::before,
+.crop::after {
+  content: '';
+  position: absolute;
+  background: var(--ink-soft);
+}
+.crop::before {
+  width: 100%;
+  height: 1px;
+  top: 50%;
+}
+.crop::after {
+  width: 1px;
+  height: 100%;
+  left: 50%;
+}
+.crop.tl {
+  top: -7px;
+  left: -7px;
+}
+.crop.tr {
+  top: -7px;
+  right: -7px;
+}
+.crop.bl {
+  bottom: -7px;
+  left: -7px;
+}
+.crop.br {
+  bottom: -7px;
+  right: -7px;
+}
+
+header.masthead {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  border-bottom: 2px solid var(--ink);
+  padding-bottom: 16px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+h1.title {
+  font-family: var(--font-display), sans-serif;
+  font-size: clamp(24px, 5vw, 32px);
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.doc-meta {
+  text-align: right;
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+
+h2.section-title {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink-soft);
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+section.block {
+  margin-bottom: 36px;
+}
+
+/* Check-in card */
+.checkin-card {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+
+.checkin-grid {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 20px;
+  font-family: var(--font-mono), monospace;
+}
+
+.checkin-grid .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  margin-bottom: 4px;
+}
+
+.checkin-grid .value {
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Forms */
+.card-dashed {
+  background: var(--paper);
+  border: 1px dashed var(--rule);
+  padding: 18px;
+}
+
+input[type='text'],
+input[type='password'],
+input[type='time'],
+input[type='date'],
+input[type='month'] {
+  font-family: var(--font-body), sans-serif;
+  font-size: 15px;
+  padding: 10px 12px;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+}
+
+input[type='time'],
+input[type='date'],
+input[type='month'] {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  padding: 7px 10px;
+}
+
+input:focus-visible,
+button:focus-visible {
+  outline: 2px solid var(--stamp-red);
+  outline-offset: 2px;
+}
+
+.full-input {
+  width: 100%;
+  margin-bottom: 12px;
+}
+
+.btn-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.btn {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  border: 2px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.btn:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.btn.start {
+  border-color: var(--stamp-green);
+  color: var(--stamp-green);
+}
+.btn.start:hover {
+  background: var(--stamp-green);
+  color: #fff;
+}
+.btn.finish {
+  border-color: var(--stamp-red);
+  color: var(--stamp-red);
+}
+.btn.finish:hover {
+  background: var(--stamp-red);
+  color: #fff;
+}
+
+.form-msg {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  margin-top: 10px;
+  min-height: 16px;
+  color: var(--stamp-red);
+}
+
+.toggle-row {
+  display: flex;
+  gap: 6px;
+}
+
+.toggle-btn {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  padding: 6px 14px;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink-soft);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.toggle-btn.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+/* Docket stubs */
+.stub-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.stub {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: var(--paper);
+  border-left: 3px dashed var(--rule);
+  padding: 12px 14px;
+  flex-wrap: wrap;
+}
+
+.stub .task-name {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.stub .meta {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+.stamp {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border: 2px solid currentColor;
+  border-radius: 3px;
+  transform: rotate(-3deg);
+  display: inline-block;
+}
+.stamp.start {
+  color: var(--stamp-green);
+}
+.stamp.finish {
+  color: var(--stamp-red);
+}
+
+.del-btn {
+  background: none;
+  border: none;
+  color: var(--ink-soft);
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+.del-btn:hover {
+  color: var(--stamp-red);
+}
+
+.empty-state {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  color: var(--ink-soft);
+  padding: 18px 0;
+  text-align: center;
+  border: 1px dashed var(--rule-soft);
+}
+
+/* Report table */
+table.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: 16px;
+}
+table.report-table th,
+table.report-table td {
+  text-align: left;
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+table.report-table th {
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--ink-soft);
+  border-bottom: 2px solid var(--ink);
+}
+table.report-table td.dur {
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.total-row td {
+  font-weight: 700;
+  border-top: 2px solid var(--ink);
+  border-bottom: none;
+}
+
+.in-progress-note {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--stamp-green);
+  margin-top: 6px;
+  margin-bottom: 16px;
+}
+
+.text-report {
+  width: 100%;
+  min-height: 220px;
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  padding: 14px;
+  border: 1px solid var(--rule);
+  background: #fff;
+  color: var(--ink);
+  resize: vertical;
+}
+
+.copy-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+footer.foot-note {
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+  margin-top: 8px;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  color: var(--ink-soft);
+  text-align: center;
+}
+
+/* Login page */
+.login-wrap {
+  min-height: 80vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.login-card {
+  background: var(--paper-alt);
+  border: 1px solid var(--rule);
+  padding: 32px;
+  width: min(320px, 90vw);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.login-card h1 {
+  font-family: var(--font-display), sans-serif;
+  font-size: 22px;
+  text-transform: uppercase;
+}
+.login-sub {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--ink-soft);
+  margin: 0 0 8px;
+}
+.login-error {
+  font-family: var(--font-mono), monospace;
+  font-size: 12px;
+  color: var(--stamp-red);
+}
+.login-card button {
+  font-family: var(--font-mono), monospace;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  padding: 10px 18px;
+  border: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  text-transform: uppercase;
+}
+.login-card button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
