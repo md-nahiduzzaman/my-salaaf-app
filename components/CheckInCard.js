@@ -17,10 +17,21 @@ function fmtTime(iso) {
   });
 }
 
+function timeInputValue(iso) {
+  if (!iso) return '';
+  return new Date(iso).toLocaleTimeString('en-GB', {
+    timeZone: 'Asia/Dhaka',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+  });
+}
+
 export default function CheckInCard({ refreshKey, bumpRefresh }) {
-  const [checkin, setCheckin] = useState(undefined); // undefined = loading, null = none
+  const [checkin, setCheckin] = useState(undefined);
   const [editing, setEditing] = useState(false);
-  const [timeInput, setTimeInput] = useState('');
+  const [checkinInput, setCheckinInput] = useState('');
+  const [checkoutInput, setCheckoutInput] = useState('');
   const [msg, setMsg] = useState('');
 
   const load = useCallback(async () => {
@@ -37,27 +48,66 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
     load();
   }, [load, refreshKey]);
 
+  function openEdit() {
+    setCheckinInput(timeInputValue(checkin.checkin_time));
+    setCheckoutInput(timeInputValue(checkin.checkout_time));
+    setMsg('');
+    setEditing(true);
+  }
+
+  function localDhakaIso(timeValue) {
+    if (!timeValue) return null;
+    const [h, m] = timeValue.split(':').map(Number);
+    const now = new Date();
+    const date = todayStr();
+    const utcMs = Date.UTC(
+      Number(date.slice(0, 4)),
+      Number(date.slice(5, 7)) - 1,
+      Number(date.slice(8, 10)),
+      h - 6,
+      m,
+      0,
+      0
+    );
+    return new Date(utcMs).toISOString();
+  }
+
   async function submitCheckin(e) {
     e.preventDefault();
-    let iso;
-    if (timeInput) {
-      const [h, m] = timeInput.split(':').map(Number);
-      const d = new Date();
-      d.setHours(h, m, 0, 0);
-      iso = d.toISOString();
+    if (!checkinInput || !checkoutInput) {
+      setMsg('Enter both check-in and check-out times.');
+      return;
     }
+
+    const time = localDhakaIso(checkinInput);
+    const checkoutTime = localDhakaIso(checkoutInput);
+
+    if (new Date(checkoutTime) <= new Date(time)) {
+      setMsg('Check-out must be later than check-in.');
+      return;
+    }
+
     try {
       const res = await fetch('/api/checkin', {
-        method: 'POST',
+        method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(iso ? { time: iso, day: todayStr() } : { day: todayStr() }),
+        body: JSON.stringify({
+          time,
+          checkoutTime,
+          day: todayStr(),
+        }),
       });
-      if (!res.ok) throw new Error();
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Could not save check-in.');
+      }
+
       setEditing(false);
       setMsg('Check-in saved.');
       bumpRefresh();
-    } catch {
-      setMsg('Could not save check-in.');
+    } catch (err) {
+      setMsg(err.message || 'Could not save check-in.');
     }
   }
 
@@ -67,27 +117,33 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
 
   if (!checkin || editing) {
     return (
-      <form className="checkin-card" onSubmit={submitCheckin} style={{ flexDirection: 'column', alignItems: 'stretch' }}>
+      <form
+        className="checkin-card"
+        onSubmit={submitCheckin}
+        style={{ flexDirection: 'column', alignItems: 'stretch' }}
+      >
         <div className="section-head" style={{ marginBottom: 6 }}>
-          <h2 className="section-title">Check In</h2>
+          <h2 className="section-title">{checkin ? 'Edit Check-in' : 'Check In'}</h2>
+        </div>
+        <div className="edit-checkin-grid">
+          <label>
+            Check-in
+            <input type="time" value={checkinInput} onChange={(e) => setCheckinInput(e.target.value)} />
+          </label>
+          <label>
+            Check-out
+            <input type="time" value={checkoutInput} onChange={(e) => setCheckoutInput(e.target.value)} />
+          </label>
         </div>
         <div className="btn-row">
-          <input
-            type="time"
-            value={timeInput}
-            onChange={(e) => setTimeInput(e.target.value)}
-            placeholder="Now"
-          />
-          <button type="submit" className="btn start">
-            Check In {timeInput ? '' : '(now)'}
-          </button>
-          {editing && (
+          <button type="submit" className="btn start">Save</button>
+          {checkin && (
             <button type="button" className="btn" onClick={() => setEditing(false)}>
               Cancel
             </button>
           )}
         </div>
-        {msg && <div className="form-msg">{msg}</div>}
+        <div className="form-msg">{msg}</div>
       </form>
     );
   }
@@ -108,9 +164,7 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
           <div className="value">{checkin.effective_hours}h</div>
         </div>
       </div>
-      <button className="btn" onClick={() => setEditing(true)}>
-        Edit
-      </button>
+      <button className="btn" onClick={openEdit}>Edit</button>
     </div>
   );
 }

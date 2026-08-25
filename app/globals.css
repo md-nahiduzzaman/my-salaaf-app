@@ -499,3 +499,96 @@ footer.foot-note {
   opacity: 0.6;
   cursor: not-allowed;
 }
+
+/* Editing */
+.edit-checkin-grid,
+.edit-task-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.edit-field,
+.edit-checkin-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: var(--font-mono), monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: .7px;
+  color: var(--ink-soft);
+}
+
+.edit-field input,
+.edit-checkin-grid input {
+  width: 100%;
+}
+
+.edit-cell {
+  text-align: right !important;
+  white-space: nowrap;
+}
+
+.table-edit-btn,
+.modal-close {
+  font-family: var(--font-mono), monospace;
+  border: 1px solid var(--ink);
+  background: transparent;
+  color: var(--ink);
+  cursor: pointer;
+}
+
+.table-edit-btn {
+  padding: 4px 8px;
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.table-edit-btn:hover,
+.modal-close:hover {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.postponed-note {
+  color: var(--ink-soft);
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(33, 30, 25, .35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.edit-modal {
+  width: min(620px, 100%);
+  background: var(--paper-alt);
+  border: 2px solid var(--ink);
+  padding: 22px;
+  box-shadow: 8px 8px 0 rgba(33, 30, 25, .15);
+}
+
+.edit-modal .section-head {
+  margin-bottom: 16px;
+}
+
+.modal-close {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+@media (max-width: 560px) {
+  .edit-checkin-grid,
+  .edit-task-grid {
+    grid-template-columns: 1fr;
+  }
+}
