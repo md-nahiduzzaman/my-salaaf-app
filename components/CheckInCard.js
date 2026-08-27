@@ -74,15 +74,23 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
 
   async function submitCheckin(e) {
     e.preventDefault();
-    if (!checkinInput || !checkoutInput) {
-      setMsg('Enter both check-in and check-out times.');
+
+    if (!checkinInput) {
+      setMsg('Enter check-in time.');
       return;
     }
 
     const time = localDhakaIso(checkinInput);
-    const checkoutTime = localDhakaIso(checkoutInput);
+    const checkoutTime = checkin ? localDhakaIso(checkoutInput) : null;
 
-    if (new Date(checkoutTime) <= new Date(time)) {
+    // Check-out is optional when creating today's check-in.
+    // The server automatically calculates it as check-in + SHIFT_HOURS.
+    if (checkin && !checkoutTime) {
+      setMsg('Enter check-out time.');
+      return;
+    }
+
+    if (checkoutTime && new Date(checkoutTime) <= new Date(time)) {
       setMsg('Check-out must be later than check-in.');
       return;
     }
@@ -128,13 +136,27 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
         <div className="edit-checkin-grid">
           <label>
             Check-in
-            <input type="time" value={checkinInput} onChange={(e) => setCheckinInput(e.target.value)} />
+            <input
+              type="time"
+              value={checkinInput}
+              onChange={(e) => setCheckinInput(e.target.value)}
+            />
           </label>
-          <label>
-            Check-out
-            <input type="time" value={checkoutInput} onChange={(e) => setCheckoutInput(e.target.value)} />
-          </label>
+
+          {checkin && (
+            <label>
+              Check-out
+              <input
+                type="time"
+                value={checkoutInput}
+                onChange={(e) => setCheckoutInput(e.target.value)}
+              />
+            </label>
+          )}
         </div>
+        {!checkin && (
+          <div className="form-msg">Check-out will be calculated automatically.</div>
+        )}
         <div className="btn-row">
           <button type="submit" className="btn start">Save</button>
           {checkin && (
