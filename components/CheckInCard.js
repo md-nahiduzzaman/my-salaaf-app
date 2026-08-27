@@ -27,7 +27,7 @@ function timeInputValue(iso) {
   });
 }
 
-export default function CheckInCard({ refreshKey, bumpRefresh }) {
+export default function CheckInCard({ refreshKey, bumpRefresh, editMode = false }) {
   const [checkin, setCheckin] = useState(undefined);
   const [editing, setEditing] = useState(false);
   const [checkinInput, setCheckinInput] = useState('');
@@ -186,7 +186,9 @@ export default function CheckInCard({ refreshKey, bumpRefresh }) {
           <div className="value">{checkin.effective_hours}h</div>
         </div>
       </div>
-      <button className="btn" onClick={openEdit}>Edit</button>
+      {editMode && (
+        <button className="btn" onClick={openEdit}>Edit</button>
+      )}
     </div>
   );
 }

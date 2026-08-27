@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback } from 'react';
 
 function todayStr() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(
-    d.getDate(),
-  ).padStart(2, "0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(
+    d.getDate()
+  ).padStart(2, '0')}`;
 }
 
 function monthStr() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
 function fmtMs(ms) {
@@ -23,22 +23,22 @@ function fmtMs(ms) {
 }
 
 function timeValue(iso) {
-  return new Date(iso).toLocaleTimeString("en-GB", {
-    timeZone: "Asia/Dhaka",
-    hour: "2-digit",
-    minute: "2-digit",
+  return new Date(iso).toLocaleTimeString('en-GB', {
+    timeZone: 'Asia/Dhaka',
+    hour: '2-digit',
+    minute: '2-digit',
     hour12: false,
   });
 }
 
 function dhakaIso(date, time) {
-  const [y, mo, day] = date.split("-").map(Number);
-  const [h, m] = time.split(":").map(Number);
+  const [y, mo, day] = date.split('-').map(Number);
+  const [h, m] = time.split(':').map(Number);
   return new Date(Date.UTC(y, mo - 1, day, h - 6, m)).toISOString();
 }
 
-export default function ReportPanel({ refreshKey }) {
-  const [scope, setScope] = useState("day");
+export default function ReportPanel({ refreshKey, editMode = false }) {
+  const [scope, setScope] = useState('day');
   const [date, setDate] = useState(todayStr());
   const [month, setMonth] = useState(monthStr());
   const [report, setReport] = useState(null);
@@ -46,9 +46,9 @@ export default function ReportPanel({ refreshKey }) {
   const [copied, setCopied] = useState(false);
   const [editing, setEditing] = useState(null);
   const [saving, setSaving] = useState(false);
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState('');
 
-  const anchorDate = scope === "month" ? `${month}-01` : date;
+  const anchorDate = scope === 'month' ? `${month}-01` : date;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -76,7 +76,7 @@ export default function ReportPanel({ refreshKey }) {
   }
 
   function openEdit(pair) {
-    setMsg("");
+    setMsg('');
     setEditing({
       pair,
       task: pair.task,
@@ -89,7 +89,7 @@ export default function ReportPanel({ refreshKey }) {
 
   async function saveEdit() {
     if (!editing?.task.trim()) {
-      setMsg("Enter a task name.");
+      setMsg('Enter a task name.');
       return;
     }
 
@@ -97,32 +97,32 @@ export default function ReportPanel({ refreshKey }) {
     const finishIso = dhakaIso(editing.finishDate, editing.finishTime);
 
     if (new Date(finishIso) <= new Date(startIso)) {
-      setMsg("Finish time must be later than start time.");
+      setMsg('Finish time must be later than start time.');
       return;
     }
 
     setSaving(true);
-    setMsg("");
+    setMsg('');
 
     try {
       const first = await fetch(`/api/entries/${editing.pair.start.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task: editing.task.trim(), ts: startIso }),
       });
-      if (!first.ok) throw new Error("Could not update start entry.");
+      if (!first.ok) throw new Error('Could not update start entry.');
 
       const second = await fetch(`/api/entries/${editing.pair.finish.id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ task: editing.task.trim(), ts: finishIso }),
       });
-      if (!second.ok) throw new Error("Could not update finish entry.");
+      if (!second.ok) throw new Error('Could not update finish entry.');
 
       setEditing(null);
       await load();
     } catch (err) {
-      setMsg(err.message || "Could not save task.");
+      setMsg(err.message || 'Could not save task.');
     } finally {
       setSaving(false);
     }
@@ -133,30 +133,18 @@ export default function ReportPanel({ refreshKey }) {
   return (
     <div>
       <div className="toggle-row" style={{ marginBottom: 14 }}>
-        {["day", "week", "month"].map((m) => (
-          <button
-            key={m}
-            className={`toggle-btn ${scope === m ? "active" : ""}`}
-            onClick={() => setScope(m)}
-          >
+        {['day', 'week', 'month'].map((m) => (
+          <button key={m} className={`toggle-btn ${scope === m ? 'active' : ''}`} onClick={() => setScope(m)}>
             {m}
           </button>
         ))}
       </div>
 
       <div style={{ marginBottom: 16 }}>
-        {scope === "month" ? (
-          <input
-            type="month"
-            value={month}
-            onChange={(e) => setMonth(e.target.value)}
-          />
+        {scope === 'month' ? (
+          <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
         ) : (
-          <input
-            type="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         )}
       </div>
 
@@ -174,22 +162,19 @@ export default function ReportPanel({ refreshKey }) {
             </thead>
             <tbody>
               {taskPairs.length === 0 ? (
-                <tr>
-                  <td colSpan={3}>No completed tasks in this period.</td>
-                </tr>
+                <tr><td colSpan={3}>No completed tasks in this period.</td></tr>
               ) : (
                 taskPairs.map((pair) => (
                   <tr key={`${pair.start.id}-${pair.finish.id}`}>
                     <td>{pair.task}</td>
                     <td className="dur">{fmtMs(pair.durationMs)}</td>
-                    <td className="edit-cell">
-                      <button
-                        className="table-edit-btn"
-                        onClick={() => openEdit(pair)}
-                      >
-                        Edit
-                      </button>
-                    </td>
+                    {editMode ? (
+                      <td className="edit-cell">
+                        <button className="table-edit-btn" onClick={() => openEdit(pair)}>Edit</button>
+                      </td>
+                    ) : (
+                      <td className="edit-cell" aria-hidden="true"></td>
+                    )}
                   </tr>
                 ))
               )}
@@ -206,110 +191,57 @@ export default function ReportPanel({ refreshKey }) {
           </table>
 
           {report.openStarts?.length > 0 && (
-            <div className="in-progress-note">
-              ● Still in progress: {report.openStarts.join(", ")}
-            </div>
+            <div className="in-progress-note">● Still in progress: {report.openStarts.join(', ')}</div>
           )}
 
           {report.postponed?.length > 0 && (
-            <div className="in-progress-note postponed-note">
-              ↷ Postponed: {report.postponed.join(", ")}
-            </div>
+            <div className="in-progress-note postponed-note">↷ Postponed: {report.postponed.join(', ')}</div>
           )}
 
           <textarea className="text-report" readOnly value={report.text} />
           <div className="copy-row">
-            <button className="btn" onClick={copyText}>
-              {copied ? "Copied ✓" : "Copy as text"}
-            </button>
+            <button className="btn" onClick={copyText}>{copied ? 'Copied ✓' : 'Copy as text'}</button>
           </div>
         </>
       )}
 
       {editing && (
-        <div
-          className="modal-backdrop"
-          onMouseDown={(e) => e.target === e.currentTarget && setEditing(null)}
-        >
+        <div className="modal-backdrop" onMouseDown={(e) => e.target === e.currentTarget && setEditing(null)}>
           <div className="edit-modal">
             <div className="section-head">
               <h2 className="section-title">Edit Task</h2>
-              <button className="modal-close" onClick={() => setEditing(null)}>
-                ×
-              </button>
+              <button className="modal-close" onClick={() => setEditing(null)}>×</button>
             </div>
 
             <label className="edit-field">
               Task name
-              <input
-                type="text"
-                value={editing.task}
-                onChange={(e) =>
-                  setEditing({ ...editing, task: e.target.value })
-                }
-              />
+              <input type="text" value={editing.task} onChange={(e) => setEditing({ ...editing, task: e.target.value })} />
             </label>
 
             <div className="edit-task-grid">
               <label className="edit-field">
                 Start date
-                <input
-                  type="date"
-                  value={editing.startDate}
-                  onChange={(e) =>
-                    setEditing({ ...editing, startDate: e.target.value })
-                  }
-                />
+                <input type="date" value={editing.startDate} onChange={(e) => setEditing({ ...editing, startDate: e.target.value })} />
               </label>
               <label className="edit-field">
                 Start time
-                <input
-                  type="time"
-                  value={editing.startTime}
-                  onChange={(e) =>
-                    setEditing({ ...editing, startTime: e.target.value })
-                  }
-                />
+                <input type="time" value={editing.startTime} onChange={(e) => setEditing({ ...editing, startTime: e.target.value })} />
               </label>
               <label className="edit-field">
                 Finish date
-                <input
-                  type="date"
-                  value={editing.finishDate}
-                  onChange={(e) =>
-                    setEditing({ ...editing, finishDate: e.target.value })
-                  }
-                />
+                <input type="date" value={editing.finishDate} onChange={(e) => setEditing({ ...editing, finishDate: e.target.value })} />
               </label>
               <label className="edit-field">
                 Finish time
-                <input
-                  type="time"
-                  value={editing.finishTime}
-                  onChange={(e) =>
-                    setEditing({ ...editing, finishTime: e.target.value })
-                  }
-                />
+                <input type="time" value={editing.finishTime} onChange={(e) => setEditing({ ...editing, finishTime: e.target.value })} />
               </label>
             </div>
 
             {msg && <div className="form-msg">{msg}</div>}
 
             <div className="btn-row">
-              <button
-                className="btn start"
-                disabled={saving}
-                onClick={saveEdit}
-              >
-                {saving ? "Saving…" : "Save changes"}
-              </button>
-              <button
-                className="btn"
-                disabled={saving}
-                onClick={() => setEditing(null)}
-              >
-                Cancel
-              </button>
+              <button className="btn start" disabled={saving} onClick={saveEdit}>{saving ? 'Saving…' : 'Save changes'}</button>
+              <button className="btn" disabled={saving} onClick={() => setEditing(null)}>Cancel</button>
             </div>
           </div>
         </div>

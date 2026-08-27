@@ -592,3 +592,42 @@ footer.foot-note {
     grid-template-columns: 1fr;
   }
 }
+
+
+/* Invisible master edit-mode hotspot */
+.edit-mode-hotspot {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  margin: 0;
+  border: 1px solid transparent;
+  border-radius: 50%;
+  background: transparent;
+  color: transparent;
+  opacity: 0;
+  cursor: default;
+  z-index: 20;
+  transition: opacity .15s ease, border-color .15s ease, background .15s ease;
+}
+
+.edit-mode-hotspot:hover,
+.edit-mode-hotspot:focus-visible {
+  opacity: .65;
+  border-color: var(--rule);
+  background: rgba(33, 30, 25, .035);
+  cursor: pointer;
+}
+
+.edit-mode-hotspot.active {
+  opacity: .22;
+}
+
+.edit-mode-hotspot.active:hover,
+.edit-mode-hotspot.active:focus-visible {
+  opacity: .7;
+  border-color: var(--stamp-red);
+  background: rgba(200, 67, 31, .04);
+}

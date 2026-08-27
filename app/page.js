@@ -8,6 +8,7 @@ import ReportPanel from '@/components/ReportPanel';
 
 export default function Home() {
   const [refreshKey, setRefreshKey] = useState(0);
+  const [editMode, setEditMode] = useState(false);
   const bumpRefresh = useCallback(() => setRefreshKey((k) => k + 1), []);
 
   const today = new Date();
@@ -40,7 +41,7 @@ export default function Home() {
         <div className="section-head">
           <h2 className="section-title">Today&apos;s Check-in</h2>
         </div>
-        <CheckInCard refreshKey={refreshKey} bumpRefresh={bumpRefresh} />
+        <CheckInCard refreshKey={refreshKey} bumpRefresh={bumpRefresh} editMode={editMode} />
       </section>
 
       <section className="block">
@@ -58,10 +59,18 @@ export default function Home() {
         <div className="section-head">
           <h2 className="section-title">Report</h2>
         </div>
-        <ReportPanel refreshKey={refreshKey} />
+        <ReportPanel refreshKey={refreshKey} editMode={editMode} />
       </section>
 
       <footer className="foot-note">Data stored in your own database — private to you.</footer>
+
+      <button
+        type="button"
+        className={`edit-mode-hotspot ${editMode ? 'active' : ''}`}
+        aria-label={editMode ? 'Hide editing controls' : 'Show editing controls'}
+        aria-pressed={editMode}
+        onClick={() => setEditMode((value) => !value)}
+      />
     </div>
   );
 }
