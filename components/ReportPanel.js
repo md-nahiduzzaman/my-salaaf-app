@@ -74,6 +74,49 @@ function DayRow({ c }) {
   );
 }
 
+function TaskSummaryTable({ taskRows, report, editMode, openEdit, emptyText }) {
+  return (
+    <table className="report-table">
+      <thead>
+        <tr>
+          <th>Task</th>
+          <th>Time</th>
+          {editMode && <th></th>}
+        </tr>
+      </thead>
+      <tbody>
+        {taskRows.length === 0 ? (
+          <tr>
+            <td colSpan={editMode ? 3 : 2}>{emptyText}</td>
+          </tr>
+        ) : (
+          taskRows.map(([task, ms]) => {
+            const pair = report.taskPairs?.find((item) => item.task === task);
+            return (
+              <tr key={task}>
+                <td>{task}</td>
+                <td className="dur">{fmtMs(ms)}</td>
+                {editMode && (
+                  <td className="edit-cell">
+                    {pair && (
+                      <button
+                        className="table-edit-btn"
+                        onClick={() => openEdit(pair)}
+                      >
+                        Edit
+                      </button>
+                    )}
+                  </td>
+                )}
+              </tr>
+            );
+          })
+        )}
+      </tbody>
+    </table>
+  );
+}
+
 export default function ReportPanel({ refreshKey, editMode = false }) {
   const [scope, setScope] = useState('day');
   const [date, setDate] = useState(todayStr());
@@ -185,10 +228,22 @@ export default function ReportPanel({ refreshKey, editMode = false }) {
               <tbody>
                 {taskRows.length === 0 ? (
                   <tr><td colSpan={editMode ? 3 : 2}>No completed tasks in this period.</td></tr>
-                ) : taskRows.map(([task, ms]) => {
-                  const pair = report.taskPairs?.find((p) => p.task === task);
-                  return <tr key={task}><td>{task}</td><td className="dur">{fmtMs(ms)}</td>{editMode && <td className="edit-cell">{pair && <button className="table-edit-btn" onClick={() => openEdit(pair)}>Edit</button>}</td>}</tr>;
-                })}
+                ) : (
+                  taskRows.map(([task, ms]) => {
+                    const pair = report.taskPairs?.find((p) => p.task === task);
+                    return (
+                      <tr key={task}>
+                        <td>{task}</td>
+                        <td className="dur">{fmtMs(ms)}</td>
+                        {editMode && (
+                          <td className="edit-cell">
+                            {pair && <button className="table-edit-btn" onClick={() => openEdit(pair)}>Edit</button>}
+                          </td>
+                        )}
+                      </tr>
+                    );
+                  })
+                )}
               </tbody>
               <tfoot><tr className="total-row"><td>Office days logged: {report.daysPresent}</td><td className="dur">{fmtMs(report.totalWorkMs)}</td>{editMode && <td></td>}</tr>{report.totalOvertimeMs > 0 && <tr className="overtime-row"><td>Overtime</td><td className="dur">+{fmtMs(report.totalOvertimeMs)}</td>{editMode && <td></td>}</tr>}</tfoot>
             </table>
@@ -204,7 +259,13 @@ export default function ReportPanel({ refreshKey, editMode = false }) {
                 </tfoot>
               </table>
               <div className="report-subhead">TASK SUMMARY</div>
-              <table className="report-table"><thead><tr><th>Task</th><th>Time</th>{editMode && <th></th>}</tr></thead><tbody>{taskRows.length ? taskRows.map(([task, ms]) => { const pair = report.taskPairs?.find((p) => p.task === task); return <tr key={task}><td>{task}</td><td className="dur">{fmtMs(ms)}</td>{editMode && <td className="edit-cell">{pair && <button className="table-edit-btn" onClick={() => openEdit(pair)}>Edit</button>}</td>}</tr>; }) : <tr><td colSpan={editMode ? 3 : 2}>No completed tasks in this week.</td></tr>}</tbody></table>
+              <TaskSummaryTable
+                taskRows={taskRows}
+                report={report}
+                editMode={editMode}
+                openEdit={openEdit}
+                emptyText="No completed tasks in this week."
+              />
             </>
           ) : (
             <>
@@ -214,7 +275,13 @@ export default function ReportPanel({ refreshKey, editMode = false }) {
                 <tfoot><tr className="total-row"><td>Office days logged: {report.daysPresent}</td><td className="dur">{fmtMs(report.totalWorkMs)}</td><td className="dur">{report.totalOvertimeMs > 0 ? `+${fmtMs(report.totalOvertimeMs)}` : '—'}</td></tr></tfoot>
               </table>
               <div className="report-subhead">TASK SUMMARY</div>
-              <table className="report-table"><thead><tr><th>Task</th><th>Time</th>{editMode && <th></th>}</tr></thead><tbody>{taskRows.length ? taskRows.map(([task, ms]) => { const pair = report.taskPairs?.find((p) => p.task === task); return <tr key={task}><td>{task}</td><td className="dur">{fmtMs(ms)}</td>{editMode && <td className="edit-cell">{pair && <button className="table-edit-btn" onClick={() => openEdit(pair)}>Edit</button>}</td></tr>; }) : <tr><td colSpan={editMode ? 3 : 2}>No completed tasks in this month.</td></tr>}</tbody></table>
+              <TaskSummaryTable
+                taskRows={taskRows}
+                report={report}
+                editMode={editMode}
+                openEdit={openEdit}
+                emptyText="No completed tasks in this month."
+              />
             </>
           )}
 
