@@ -14,6 +14,43 @@ function monthStr() {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
+function parseDateParts(dateStr) {
+  const [year, month, day] = dateStr.split('-').map(Number);
+  return { year, month, day };
+}
+
+function addDays(dateStr, days) {
+  const { year, month, day } = parseDateParts(dateStr);
+  const d = new Date(Date.UTC(year, month - 1, day));
+  d.setUTCDate(d.getUTCDate() + days);
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}-${String(d.getUTCDate()).padStart(2, '0')}`;
+}
+
+function officeWeekRange(dateStr) {
+  const { year, month, day } = parseDateParts(dateStr);
+  const d = new Date(Date.UTC(year, month - 1, day));
+  const dayOfWeek = d.getUTCDay();
+  const daysSinceSaturday = (dayOfWeek + 1) % 7;
+  const saturday = new Date(d);
+  saturday.setUTCDate(d.getUTCDate() - daysSinceSaturday);
+  const thursday = new Date(saturday);
+  thursday.setUTCDate(saturday.getUTCDate() + 5);
+
+  const format = (value) =>
+    `${value.getUTCFullYear()}-${String(value.getUTCMonth() + 1).padStart(2, '0')}-${String(value.getUTCDate()).padStart(2, '0')}`;
+
+  return { from: format(saturday), to: format(thursday) };
+}
+
+function prettyWeekRange(from, to) {
+  const start = new Date(`${from}T00:00:00Z`);
+  const end = new Date(`${to}T00:00:00Z`);
+  const options = { timeZone: 'UTC', month: 'short', day: 'numeric' };
+  const startText = new Intl.DateTimeFormat('en-US', options).format(start);
+  const endText = new Intl.DateTimeFormat('en-US', { ...options, year: 'numeric' }).format(end);
+  return `${startText} — ${endText}`;
+}
+
 function fmtMs(ms) {
   const totalMin = Math.round(ms / 60000);
   const h = Math.floor(totalMin / 60);
@@ -49,6 +86,7 @@ export default function ReportPanel({ refreshKey, editMode = false }) {
   const [msg, setMsg] = useState('');
 
   const anchorDate = scope === 'month' ? `${month}-01` : date;
+  const selectedWeek = scope === 'week' ? officeWeekRange(date) : null;
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -143,6 +181,39 @@ export default function ReportPanel({ refreshKey, editMode = false }) {
       <div style={{ marginBottom: 16 }}>
         {scope === 'month' ? (
           <input type="month" value={month} onChange={(e) => setMonth(e.target.value)} />
+        ) : scope === 'week' ? (
+          <div className="week-picker">
+            <button
+              type="button"
+              className="week-nav-btn"
+              aria-label="Previous office week"
+              onClick={() => setDate(addDays(selectedWeek.from, -7))}
+            >
+              ‹
+            </button>
+
+            <div className="week-picker-main">
+              <input
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+                aria-label="Select a date from the office week"
+              />
+              <div className="week-range-label">
+                Office week: {prettyWeekRange(selectedWeek.from, selectedWeek.to)}
+              </div>
+              <div className="week-range-sub">Saturday → Thursday · Friday off</div>
+            </div>
+
+            <button
+              type="button"
+              className="week-nav-btn"
+              aria-label="Next office week"
+              onClick={() => setDate(addDays(selectedWeek.from, 7))}
+            >
+              ›
+            </button>
+          </div>
         ) : (
           <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
         )}
