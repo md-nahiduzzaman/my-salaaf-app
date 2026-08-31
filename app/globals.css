@@ -330,36 +330,6 @@ button:focus-visible {
   color: var(--stamp-red);
 }
 
-.docket-action {
-  border: 1px solid currentColor;
-  background: transparent;
-  padding: 6px 10px;
-  border-radius: 3px;
-  font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.15s ease;
-}
-.docket-action:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-.finish-action {
-  color: var(--stamp-green);
-}
-.finish-action:hover {
-  background: var(--stamp-green);
-  color: var(--paper);
-}
-.postpone-action {
-  color: var(--ink-soft);
-}
-.postpone-action:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-
 .del-btn {
   background: none;
   border: none;
@@ -500,101 +470,42 @@ footer.foot-note {
   cursor: not-allowed;
 }
 
-/* Editing */
-.edit-checkin-grid,
-.edit-task-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
-  margin-bottom: 14px;
-}
-
-.edit-field,
-.edit-checkin-grid label {
+.checkin-meta-row {
   display: flex;
-  flex-direction: column;
-  gap: 6px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.lunch-note,
+.checked-out-note {
   font-family: var(--font-mono), monospace;
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: .7px;
-  color: var(--ink-soft);
+  font-size: 9px;
+  letter-spacing: .3px;
 }
 
-.edit-field input,
-.edit-checkin-grid input {
-  width: 100%;
-}
+.lunch-note { opacity: .55; }
+.checked-out-note { opacity: .72; }
 
-.edit-cell {
-  text-align: right !important;
-  white-space: nowrap;
-}
-
-.table-edit-btn,
-.modal-close {
-  font-family: var(--font-mono), monospace;
+.checkout-btn {
+  margin-top: 8px;
+  align-self: flex-end;
   border: 1px solid var(--ink);
-  background: transparent;
-  color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  padding: 7px 12px;
+  font-family: var(--font-mono), monospace;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  text-transform: uppercase;
   cursor: pointer;
 }
 
-.table-edit-btn {
-  padding: 4px 8px;
-  font-size: 10px;
-  text-transform: uppercase;
-}
+.checkout-btn:hover { opacity: .85; }
+.checkout-btn:disabled { opacity: .55; cursor: wait; }
 
-.table-edit-btn:hover,
-.modal-close:hover {
-  background: var(--ink);
-  color: var(--paper);
-}
-
-.postponed-note {
-  color: var(--ink-soft);
-}
-
-.modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(33, 30, 25, .35);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 1000;
-}
-
-.edit-modal {
-  width: min(620px, 100%);
-  background: var(--paper-alt);
-  border: 2px solid var(--ink);
-  padding: 22px;
-  box-shadow: 8px 8px 0 rgba(33, 30, 25, .15);
-}
-
-.edit-modal .section-head {
-  margin-bottom: 16px;
-}
-
-.modal-close {
-  width: 30px;
-  height: 30px;
-  font-size: 18px;
-  line-height: 1;
-}
-
-@media (max-width: 560px) {
-  .edit-checkin-grid,
-  .edit-task-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-
-/* Invisible master edit-mode hotspot */
 .edit-mode-hotspot {
   position: absolute;
   right: 0;
@@ -621,13 +532,19 @@ footer.foot-note {
   cursor: pointer;
 }
 
-.edit-mode-hotspot.active {
-  opacity: .22;
-}
-
+.edit-mode-hotspot.active { opacity: .22; }
 .edit-mode-hotspot.active:hover,
 .edit-mode-hotspot.active:focus-visible {
   opacity: .7;
   border-color: var(--stamp-red);
   background: rgba(200, 67, 31, .04);
 }
+
+.week-picker { display:flex; align-items:stretch; gap:8px; }
+.week-picker-main { min-width:250px; }
+.week-picker-main input[type='date'] { width:100%; box-sizing:border-box; }
+.week-nav-btn { width:34px; min-width:34px; border:1px solid var(--rule); background:transparent; font-family:inherit; font-size:22px; line-height:1; cursor:pointer; }
+.week-nav-btn:hover { background:rgba(33,30,25,.06); }
+.week-range-label { margin-top:7px; font-family:var(--font-mono),monospace; font-size:12px; font-weight:700; }
+.week-range-sub { margin-top:3px; font-family:var(--font-mono),monospace; font-size:10px; opacity:.65; }
+@media (max-width:520px) { .week-picker-main { min-width:0; flex:1; } }
